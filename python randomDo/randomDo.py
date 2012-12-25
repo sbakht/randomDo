@@ -1,10 +1,12 @@
 import sys
 import re
 import random
+####code breaks when using view and priority is off
 
 taskList = []
 
-def add_task():
+def add_task(priorityChoice):
+  if priorityChoice == 'on':
     title = raw_input('Please enter your task: ')
     priority = raw_input('Please enter the priority(high, medium, low): ')
     tuple = (title,priority)
@@ -16,6 +18,17 @@ def add_task():
       add_task()
     else:
       return 
+  else:
+    title = raw_input('Please enter your task: ')
+    tuple = (title)
+    
+    taskList.append(tuple)
+    
+    again = raw_input('Do you want to add another task(Y/N)? ')
+    if again.upper() == 'Y':
+      add_task()
+    else:
+      return       
       
 
 def delete_task():
@@ -36,7 +49,11 @@ def main():
   while 1:
     cmd = raw_input('Enter your command: ')
     if cmd == 'add':
-      add_task()
+      priorityChoice = raw_input('Priority on/off?')
+      if priorityChoice == on:
+        add_task(on)
+      else:
+        add_task(off)
     elif cmd == 'delete':
       delete_task()
     elif cmd == 'view':
