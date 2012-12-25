@@ -1,21 +1,31 @@
 import sys
 import re
 import random
+##can't have priority for imported files
 
 taskList = []
 
-def add_task():
-    title = raw_input('Please enter your task: ')
-    priority = raw_input('Please enter the priority(high, medium, low): ')
-    tuple = (title,priority)
+def add_task(priorityChoice):
+  if priorityChoice == 'on':
+    title = raw_input('Please enter your task (Enter \"done\" when finished): ')
     
-    taskList.append(tuple)
-    
-    again = raw_input('Do you want to add another task(Y/N)? ')
-    if again.upper() == 'Y':
-      add_task()
+    if title.lower() != 'done':
+      priority = raw_input('Please enter the priority(high, normal, low): ')
+      tuple = (title, priority)
+      taskList.append(tuple)
+      add_task(priorityChoice)
     else:
       return 
+  else:
+    title = raw_input('Please enter your task (Enter \"done\" when finished): ')
+
+    
+    if title.lower() != 'done':
+      tuple = (title, 'normal') #sets all priority to normal when priority setting is off
+      taskList.append(tuple) 
+      add_task(priorityChoice)
+    else:
+      return       
       
 
 def delete_task():
@@ -36,7 +46,11 @@ def main():
   while 1:
     cmd = raw_input('Enter your command: ')
     if cmd == 'add':
-      add_task()
+      while 1:
+        priorityChoice = raw_input('Priority on or off?: ')
+        if priorityChoice == 'on' or priorityChoice == 'off' :
+          break
+      add_task(priorityChoice)
     elif cmd == 'delete':
       delete_task()
     elif cmd == 'view':
@@ -46,12 +60,24 @@ def main():
         print str(i) + ': ' + x[0] + '    ' + x[1]
         i += 1
     elif cmd == 'start':
-      i = 1
+      i = 0
+      x = 1
+      reshuffleOnce = -1
       random.shuffle(taskList)
-      for x in taskList:
-        print str(i) +': ' + x[0]
-        raw_input('Press Enter when you have completed this task')
-      print 'Congradulations, you have completed all your tasks'
+      while i < len(taskList):
+        print '##### ' + str(x) + ': ' + taskList[0][0] + ' #####\n'
+        reshuffle = raw_input('Press Enter when you have completed this task or \"reshuffle\" once each task #\n')
+        if reshuffle == 'reshuffle':
+          if reshuffleOnce == x:
+            continue
+          else:
+            reshuffleOnce = x
+            random.shuffle(taskList)
+            i = 0
+        else:
+          taskList.remove(taskList[0])
+          x += 1
+      print 'CONGRADULATIONS, you have completed all your tasks'
     elif cmd == 'export':
       i = 1
       for x in sorted(taskList,key=sortKey):
@@ -59,6 +85,11 @@ def main():
         i += 1   
       f = open('tasks', 'w')
       f.write(output)
+    elif cmd == 'import': #reads tasks.txt of tasks instead of imputting manually using add command
+      f = open('tasks.txt')
+      for title in f:
+        tuple = (title.rstrip('\n'), 'normal') #sets all priority to normal when priority setting is off
+        taskList.append(tuple) 
     elif cmd == 'exit':
       break
 
